@@ -1,43 +1,84 @@
-import { Component } from "react";
+import React, { Component, Fragment } from "react";
 import Head from "next/head";
-
 import io from "socket.io-client";
-import cuid from 'cuid';
+import cuid from "cuid";
+import storage from "../lib/storage";
 
-import { storage } from "../lib";
+let Tone = null;
+if (process.browser) {
+  Tone = require("tone");
+}
 
 const DEVICE_ID = "floek:proxima:device-id";
 
 class Index extends Component {
-  state = {enabled: false, distance: 0, event: {}, error: null};
-  watchID = null;
-  deivceID = null
-  
+  state = { sensor: null, event: {}, error: null };
+  deviceID = null;
+  socket = null;
+
+  proxima = {
+    noise: null,
+    heartbeat: {
+      A: null,
+      B: null
+    }
+  };
+
   componentDidMount() {
+    this.deviceID = getDeviceID();
     this.socket = io();
-    
-    const deviceID = storage.getItem(DEVICE_ID)
-    if (deviceID === undefined || deviceID === null) {
-      this.deviceID = cuid();
-      storage.setItem(DEVICE_ID, this.deviceID)
+
+    if (process.browser && Tone !== null) {
+      this.proxima.noise = new Tone.Noise({
+        type: "pink",
+        volume: 0
+      }).toMaster();
+
+      this.proxima.heartbeat.A = new Tone.MonoSynth({
+        oscillator: {
+          type: "square8"
+        },
+        envelope: {
+          attack: 0.05,
+          decay: 0.3,
+          sustain: 0.4,
+          release: 0.8
+        },
+        filterEnvelope: {
+          attack: 0.001,
+          decay: 0.7,
+          sustain: 0.1,
+          release: 0.8,
+          baseFrequency: 300,
+          octaves: 4
+        }
+      }).toMaster();
     }
-    this.deviceID = deviceID;
-    
-    if (window.DeviceMotionEvent) {
-      window.addEventListener("devicemotion", this.onDeviceMotionUpdate.bind(this), false)
-    } else {
-      this.onPositionError("motion not avaliable")
-    }
-    
+
+    this.socket.on("floek:proxima", ({ target, trigger }) => {
+      if (target === "noise") {
+        if (trigger === "start") {
+          this.proxima.noise.start();
+        } else if (trigger === "stop") {
+          this.proxima.noise.stop();
+        }
+      }
+    });
+
+    this.socket.on("floek:proxima:heartbeat", ({ sensor }) => {
+      this.proxima.heartbeat[sensor].triggerAttackRelease("C4", "8n");
+    });
   }
 
-  componentWillUnmount() {}
+  componentWillUnmount() {
+    this.socket.close();
+  }
 
   render() {
-    const { enabled, distance, event, error } = this.state;
+    const { sensor, event, error } = this.state;
 
     return (
-      <div>
+      <Fragment>
         <Head>
           <title>proxima</title>
           <meta
@@ -45,38 +86,28 @@ class Index extends Component {
             content="initial-scale=1.0, width=device-width"
           />
         </Head>
-      
-        { error ? (<div>{JSON.stringify(error)}</div>) : null}
-      
-        <div>distance: {JSON.stringify(distance)}</div>
-        <div>event: {JSON.stringify(new Date())}{JSON.stringify(event)}</div>
-      </div>
+
+        <div>
+          <h1>Proxima</h1>
+          <h2>{JSON.stringify(event)}</h2>
+          <h2>
+            {JSON.stringify(new Date())}
+            {JSON.stringify(sensor)}
+          </h2>
+        </div>
+      </Fragment>
     );
   }
-
-  onPositionUpdate(position) {
-    this.setState(state => ({
-      ...state,
-      location: {
-        longitude: position.coords.longitude,
-        latitude: position.coords.latitude
-      }
-    }), () => this.socket.emit("location", {id: this.deviceID, location: this.state.location}));
-  }
-
-  onPositionError(error) {
-    this.setState(state => ({
-      ...state,
-      error: error
-    }));
-  }
-
-  onDeviceMotionUpdate(event) {
-    console.log(event);
-    this.socket.emit("floek:motion", {id: this.deviceID, data: event })
-    this.setState(state => ({...state, event: event }))
-  }
-
 }
+
+const getDeviceID = () => {
+  let deviceID = storage.getItem(DEVICE_ID);
+  if (deviceID === undefined || deviceID === null) {
+    let deviceID = cuid();
+    storage.setItem(DEVICE_ID, deviceID);
+    return deviceID;
+  }
+  return deviceID;
+};
 
 export default Index;

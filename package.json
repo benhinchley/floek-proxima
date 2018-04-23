@@ -1,31 +1,22 @@
 {
-  "name": "my-glitch-app",
-  "version": "0.0.1",
-  "description": "What am I about?",
+  "name": "proxima",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
   "scripts": {
-    "start": "node server.js"
+    "build": "next build",
+    "start": "node server"
   },
   "dependencies": {
-    "socket.io": "^2.1.0",
-    "socket.io-client": "^2.1.0",
+    "cuid": "^2.1.1",
+    "express": "^4.16.3",
+    "js-cookie": "^2.2.0",
+    "next": "^5.1.0",
+    "osc-msg": "^1.2.0",
     "react": "^16.3.1",
     "react-dom": "^16.3.1",
-    "next": "^5.1.0",
-    "express": "^4.16.3",
-    "cuid": "^2.1.1",
-    "js-cookie": "^2.2.0",
-    "gyronorm": "^2.0.6"
-  },
-  "engines": {
-    "node": "9.x"
-  },
-  "repository": {
-    "url": "https://glitch.com/edit/#!/my-glitch-app"
-  },
-  "license": "MIT",
-  "keywords": [
-    "node",
-    "glitch",
-    "express"
-  ]
+    "socket.io": "^2.1.0",
+    "socket.io-client": "^2.1.0",
+    "tone": "^0.12.80"
+  }
 }
