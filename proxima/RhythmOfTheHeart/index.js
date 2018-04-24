@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { PERFORMER, AUDIENCE } from "../constants";
+import { ROLE_PERFORMER, ROLE_AUDIENCE } from "../constants";
 import { randomInt } from "../utils";
 
 let Tone = null;
@@ -9,14 +9,14 @@ if (process.browser) {
 
 export class RhythmOfTheHeart extends Component {
   static defaultProps = {
-    role: AUDIENCE
+    role: ROLE_AUDIENCE
   };
 
   state = { heartbeat: false };
   instruments = null;
 
   render() {
-    if (this.props.role === AUDIENCE) return null;
+    if (this.props.role === ROLE_AUDIENCE) return null;
 
     return (
       <div>
@@ -68,11 +68,11 @@ export class RhythmOfTheHeart extends Component {
       }
     });
 
-    if (role === AUDIENCE) {
+    if (role === ROLE_AUDIENCE) {
       socket.on("floek:proxima:heartbeat:audience", ({ active }) =>
         this.setState(state => ({ ...state, heartbeat: active }))
       );
-    } else if (role === PERFORMER) {
+    } else if (role === ROLE_PERFORMER) {
       // performer specific things
     }
   }

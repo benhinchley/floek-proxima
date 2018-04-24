@@ -5,7 +5,7 @@ import cuid from "cuid";
 import storage from "../lib/storage";
 
 import { Proxima } from "../proxima";
-import { AUDIENCE } from "../proxima/constants";
+import { ROLE_AUDIENCE } from "../proxima/constants";
 
 const DEVICE_ID = "floek:proxima:device-id";
 
@@ -39,7 +39,7 @@ class Index extends Component {
 
         <div>
           <h1>Proxima :: Audience</h1>
-          <Proxima role={AUDIENCE} socket={this.state.socket} />
+          <Proxima role={ROLE_AUDIENCE} socket={this.state.socket} />
         </div>
       </Fragment>
     );

@@ -2,7 +2,7 @@ import React, { Component } from "react";
 
 import storage from "../lib/storage";
 
-import { AUDIENCE, PERFORMER, CURRENT_SECTION } from "./constants";
+import { ROLE_AUDIENCE, ROLE_PERFORMER, CURRENT_SECTION } from "./constants";
 
 import { RhythmOfTheHeart } from "./RhythmOfTheHeart";
 import { IntroToMovement } from "./IntroToMovement";
@@ -28,7 +28,7 @@ const titles = [
 
 export class Proxima extends Component {
   static defaultProps = {
-    role: AUDIENCE
+    role: ROLE_AUDIENCE
   };
 
   state = { current: -1 };
@@ -67,7 +67,7 @@ export class Proxima extends Component {
     const { current } = this.state;
     const Current = sections[current];
 
-    if (current === -1 && role === PERFORMER) {
+    if (current === -1 && role === ROLE_PERFORMER) {
       return (
         <div>
           <button onClick={this._next}>start</button>
@@ -81,11 +81,11 @@ export class Proxima extends Component {
 
     return (
       <div>
-        {role === PERFORMER ? <h2>{titles[current]}</h2> : null}
+        {role === ROLE_PERFORMER ? <h2>{titles[current]}</h2> : null}
 
         <Current role={role} socket={socket} />
 
-        {role === PERFORMER ? (
+        {role === ROLE_PERFORMER ? (
           <div>
             <button onClick={this._next}>next</button>
           </div>

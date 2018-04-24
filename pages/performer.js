@@ -5,7 +5,7 @@ import cuid from "cuid";
 import storage from "../lib/storage";
 
 import { Proxima } from "../proxima";
-import { PERFORMER } from "../proxima/constants";
+import { ROLE_PERFORMER } from "../proxima/constants";
 
 const DEVICE_ID = "floek:proxima:device-id";
 
@@ -37,7 +37,7 @@ class Performer extends Component {
 
         <div>
           <h1>Proxima :: Performer</h1>
-          <Proxima role={PERFORMER} socket={this.state.socket} />
+          <Proxima role={ROLE_PERFORMER} socket={this.state.socket} />
         </div>
       </Fragment>
     );
