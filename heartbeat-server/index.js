@@ -5,7 +5,7 @@ const oscmsg = require("osc-msg");
 const io = require("socket.io-client");
 
 const socket = dgram.createSocket("udp4");
-const wss = io("http://localhost:3000");
+const wss = io("https://floek-proxima.glitch.me");
 
 socket.on("message", buffer => {
   const bundle = oscmsg.decode(buffer, {
@@ -21,7 +21,6 @@ socket.on("message", buffer => {
 
   bundle.elements.forEach(message => {
     const sensor = message.address.split("/")[3];
-    console.log(sensor);
     wss.emit("floek:heartbeat", { sensor });
   });
 });

@@ -5,11 +5,11 @@ import cuid from "cuid";
 import storage from "../lib/storage";
 
 import { Proxima } from "../proxima";
-import { AUDIENCE } from "../proxima/constants";
+import { PERFORMER } from "../proxima/constants";
 
 const DEVICE_ID = "floek:proxima:device-id";
 
-class Index extends Component {
+class Performer extends Component {
   state = { socket: null };
   deviceID = null;
 
@@ -19,9 +19,7 @@ class Index extends Component {
   }
 
   componentWillUnmount() {
-    if (this.state.socket !== null) {
-      this.state.socket.close();
-    }
+    this.state.socket.close();
   }
 
   render() {
@@ -30,7 +28,7 @@ class Index extends Component {
     return (
       <Fragment>
         <Head>
-          <title>proxima :: audience</title>
+          <title>proxima :: performer</title>
           <meta
             name="viewport"
             content="initial-scale=1.0, width=device-width"
@@ -38,8 +36,8 @@ class Index extends Component {
         </Head>
 
         <div>
-          <h1>Proxima :: Audience</h1>
-          <Proxima role={AUDIENCE} socket={this.state.socket} />
+          <h1>Proxima :: Performer</h1>
+          <Proxima role={PERFORMER} socket={this.state.socket} />
         </div>
       </Fragment>
     );
@@ -56,4 +54,4 @@ const getDeviceID = () => {
   return deviceID;
 };
 
-export default Index;
+export default Performer;

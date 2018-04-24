@@ -10,13 +10,24 @@ const port = process.env.PORT || 3000;
 const app = next({ dev });
 const handler = app.getRequestHandler();
 
+let currentSection = -1;
+
 io.on("connect", socket => {
+  socket.on("floek:proxima:section", ({ current }) => {
+    currentSection = current;
+    socket.broadcast.emit("floek:proxima:section", { current: currentSection });
+  });
+
+  socket.on("floek:proxima:heartbeat:audience", data => {
+    socket.broadcast.emit("floek:proxima:heartbeat:audience", data);
+  });
+
   socket.on("floek:motion", ({ id, data }) => {
     console.log(id, data);
   });
 
+  // this is an external feed
   socket.on("floek:heartbeat", ({ sensor }) => {
-    console.log("sensor", sensor);
     socket.broadcast.emit("floek:proxima:heartbeat", { sensor });
   });
 });
