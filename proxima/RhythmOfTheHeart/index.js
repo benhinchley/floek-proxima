@@ -1,11 +1,7 @@
 import React, { Component } from "react";
+import Tone from "../Tone";
 import { ROLE_PERFORMER, ROLE_AUDIENCE } from "../constants";
 import { randomInt } from "../utils";
-
-let Tone = null;
-if (process.browser) {
-  Tone = require("tone");
-}
 
 export class RhythmOfTheHeart extends Component {
   static defaultProps = {
@@ -13,6 +9,7 @@ export class RhythmOfTheHeart extends Component {
   };
 
   state = { heartbeat: false };
+  sensor = null;
   instruments = null;
 
   render() {
@@ -58,15 +55,9 @@ export class RhythmOfTheHeart extends Component {
     }
 
     // Random select what heartbeat to play
-    const HB = randomInt(2) === 0 ? "A" : "B";
+    this.sensor = randomInt(2) === 0 ? "A" : "B";
 
-    socket.on("floek:proxima:heartbeat", ({ sensor }) => {
-      // If the heartbeat is active AND the sensor incoming matches the key for the deivce
-      // play the sound
-      if (this.state.heartbeat && sensor === HB) {
-        this.instruments[HB].triggerAttackRelease("C4", "8n");
-      }
-    });
+    socket.on("floek:proxima:heartbeat", this._play(this.sensor));
 
     if (role === ROLE_AUDIENCE) {
       socket.on("floek:proxima:heartbeat:audience", ({ active }) =>
@@ -76,6 +67,19 @@ export class RhythmOfTheHeart extends Component {
       // performer specific things
     }
   }
+
+  componentWillUnmount() {
+    const { socket } = this.props;
+    socket.off("floek:proxima:heartbeat", this._play(this.sensor));
+  }
+
+  _play = HB => ({ sensor }) => {
+    // If the heartbeat is active AND the sensor incoming matches the key for the deivce
+    // play the sound
+    if (this.state.heartbeat && sensor === HB) {
+      this.instruments[HB].triggerAttackRelease("C4", "8n");
+    }
+  };
 }
 
 const setupInstruments = () => {

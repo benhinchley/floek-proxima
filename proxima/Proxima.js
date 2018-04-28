@@ -6,25 +6,10 @@ import { ROLE_AUDIENCE, ROLE_PERFORMER, CURRENT_SECTION } from "./constants";
 
 import { RhythmOfTheHeart } from "./RhythmOfTheHeart";
 import { IntroToMovement } from "./IntroToMovement";
-import { SeaOfSound } from "./SeaOfSound";
 import { ChaosClusters } from "./ChaosClusters";
-import { LoveIn } from "./LoveIn";
 
-const sections = [
-  RhythmOfTheHeart,
-  IntroToMovement,
-  SeaOfSound,
-  ChaosClusters,
-  LoveIn
-];
-
-const titles = [
-  "Rhythm Of The Heart",
-  "Intro To Movement",
-  "Sea Of Sound",
-  "Chaos Clusters",
-  "Love In"
-];
+const sections = [RhythmOfTheHeart, IntroToMovement, ChaosClusters];
+const titles = ["Rhythm Of The Heart", "Intro To Movement", "Chaos Clusters"];
 
 export class Proxima extends Component {
   static defaultProps = {

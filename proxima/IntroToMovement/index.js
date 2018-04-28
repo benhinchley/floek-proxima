@@ -1,19 +1,30 @@
 import React, { Component } from "react";
+import Tone from "../Tone";
 import { ROLE_PERFORMER, ROLE_AUDIENCE } from "../constants";
 import { randomInt } from "../utils";
 
-let Tone = null;
-if (process.browser) {
-  Tone = require("tone");
-}
+import { Motion } from "../components/Motion";
 
 export class IntroToMovement extends Component {
   static defaultProps = {
     role: ROLE_AUDIENCE
   };
 
+  state = { height: 0, speed: 0, direction: { x: null, y: null, z: null } };
+
   render() {
-    return null;
+    return (
+      <Motion
+        frequency={50}
+        onHeightChange={height =>
+          this.setState(state => ({ ...state, height }))
+        }
+        onSpeedChange={speed => this.setState(state => ({ ...state, speed }))}
+        onDirectionChange={direction =>
+          this.setState(state => ({ ...state, direction }))
+        }
+      />
+    );
   }
 
   componentDidMount() {
