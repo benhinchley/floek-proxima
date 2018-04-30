@@ -2,6 +2,7 @@ import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import Tone from "../../Tone";
 import { Socket } from "socket.io-client";
+import { randomInt } from "../../utils";
 
 import { Motion } from "../../components/Motion";
 import { ROLE_AUDIENCE, ROLE_PERFORMER } from "../../constants";
