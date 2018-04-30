@@ -3,7 +3,7 @@ import Tone from "../Tone";
 import { ROLE_PERFORMER, ROLE_AUDIENCE } from "../constants";
 import { randomInt } from "../utils";
 
-import { Motion } from "../components/Motion";
+import { Movement } from "./Movement";
 
 export class IntroToMovement extends Component {
   static defaultProps = {
@@ -13,18 +13,8 @@ export class IntroToMovement extends Component {
   state = { height: 0, speed: 0, direction: { x: null, y: null, z: null } };
 
   render() {
-    return (
-      <Motion
-        frequency={50}
-        onHeightChange={height =>
-          this.setState(state => ({ ...state, height }))
-        }
-        onSpeedChange={speed => this.setState(state => ({ ...state, speed }))}
-        onDirectionChange={direction =>
-          this.setState(state => ({ ...state, direction }))
-        }
-      />
-    );
+    const { role, socket } = this.props;
+    return <Movement role={role} socket={socket} />;
   }
 
   componentDidMount() {

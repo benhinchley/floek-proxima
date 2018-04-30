@@ -21,3 +21,8 @@ export const max = numbers => {
   }
   return max;
 };
+
+export const isWithin = (value, min, max) => {
+  if (value >= min && value <= max) return true;
+  return false;
+};

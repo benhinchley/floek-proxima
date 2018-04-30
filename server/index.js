@@ -18,17 +18,29 @@ io.on("connect", socket => {
     socket.broadcast.emit("floek:proxima:section", { current: currentSection });
   });
 
-  socket.on("floek:proxima:heartbeat:audience", data => {
-    socket.broadcast.emit("floek:proxima:heartbeat:audience", data);
+  socket.on("floek:chaos:section", data => {
+    socket.broadcast.emit("floek:chaos:section", data);
   });
 
-  socket.on("floek:motion", ({ id, data }) => {
+  socket.on("floek:chaos:klangfarben:sequence", data => {
+    socket.broadcast.emit("floek:chaos:klangfarben:sequence", data);
+  });
+
+  // motion data
+  socket.on("floek:movement:height", ({ id, height }) => {
+    console.log(id, data);
+  });
+  socket.on("floek:movement:speed", ({ id, speed }) => {
     console.log(id, data);
   });
 
   // this is an external feed
   socket.on("floek:heartbeat", ({ sensor }) => {
     socket.broadcast.emit("floek:proxima:heartbeat", { sensor });
+  });
+
+  socket.on("floek:proxima:heartbeat:audience", data => {
+    socket.broadcast.emit("floek:proxima:heartbeat:audience", data);
   });
 });
 

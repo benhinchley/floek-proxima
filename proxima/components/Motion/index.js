@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 
-import { round, max, scale } from "../../utils";
+import { round, max, scale, isWithin } from "../../utils";
 
 const NOP = () => {};
-const speedUpperBounds = 4.4704; // avg human running speed in m/s
+const speedUpperBounds = 3.5;
 
 export class Motion extends Component {
   static propTypes = {
@@ -71,7 +71,7 @@ export class Motion extends Component {
     const direction = this._computeDirection(change);
 
     onSpeedChange(round(this._speedScale(max([change.x, change.z]))), 4);
-    onHeightChange(this._computeHeight(change, direction));
+    onHeightChange(this._computeHeight(y, direction));
     onDirectionChange(direction);
   };
 
@@ -103,10 +103,12 @@ export class Motion extends Component {
     return direction;
   };
 
-  _computeHeight = (change, direction) => {
+  _computeHeight = (y, direction) => {
     const { frequency } = this.props;
     const cycle = 1 / frequency * 1000;
-    const cmPerMs = change.y / 10;
+
+    // remove gravity from the equation
+    const cmPerMs = isWithin(y, 9.5, 10.1) ? 0 : y / 10;
     const cmChange = cmPerMs * cycle;
 
     if (direction.y === "UP") {
@@ -115,6 +117,7 @@ export class Motion extends Component {
       this._height -= cmChange;
     }
 
+    // @TODO(@benhinchley): scale this value between [0.0 - 1.0]
     return this._height;
   };
 

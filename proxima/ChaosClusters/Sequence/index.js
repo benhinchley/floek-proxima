@@ -12,7 +12,8 @@ export class Sequence extends Component {
     noteDuration: PropTypes.number.isRequired,
     gain: PropTypes.number.isRequired,
     repeat: PropTypes.number.isRequired,
-    loopAfterRepeats: PropTypes.bool
+    loopAfterRepeats: PropTypes.bool,
+    wave: PropTypes.string
   };
 
   static defaultProps = {
@@ -25,13 +26,20 @@ export class Sequence extends Component {
   _sequence = null;
   _repeats = 0;
 
-  componentDidUpdate(nextProps, nextState) {
+  componentDidUpdate(prevProps, prevState) {
+    // if the props haven't changed do nothing
+    if (_.isEqual(prevProps.frequencies, this.props.frequencies)) {
+      return;
+    }
+
+    Tone.Transport.stop();
+
     if (this._sequence !== null) {
       this._sequence.stop();
       this._repeats = 0;
     }
 
-    this._setupSequence(nextProps);
+    this._setupSequence(this.props);
   }
 
   componentDidMount() {
@@ -39,6 +47,8 @@ export class Sequence extends Component {
   }
 
   componentWillUnmount() {
+    Tone.Transport.stop();
+
     if (this._sequence !== null) {
       this._sequence.stop();
     }
@@ -53,6 +63,7 @@ export class Sequence extends Component {
     tempo,
     repeat,
     loopAfterRepeats,
+    wave,
     next
   }) => {
     this._voice = randomInt(voices);
@@ -70,7 +81,7 @@ export class Sequence extends Component {
     }).toMaster();
 
     this._sine = new Tone.Oscillator({
-      type: "sine4",
+      type: wave !== undefined ? wave + "4" : "sine4",
       frequency: frequencies[this._voice]
     })
       .connect(this._env)
@@ -78,6 +89,7 @@ export class Sequence extends Component {
 
     // Set the transport bpm to the sequence tempo
     Tone.Transport.bpm.value = tempo;
+    Tone.Transport.start();
 
     this._sequence = new Tone.Sequence(
       this._play(noteDuration, repeat, loopAfterRepeats, gain, voices, next),
@@ -90,14 +102,18 @@ export class Sequence extends Component {
     time,
     note
   ) => {
+    if (note === this._voice) {
+      this._env.triggerAttackRelease(noteDuration, time, gain);
+    }
+
     if (note === voices - 1) {
       if (!loopAfterRepeats && this._repeats === repeat) {
-        next();
+        Tone.Transport.scheduleOnce(time => {
+          next();
+        }, "+" + noteDuration);
         return;
       }
       this._repeats += 1;
-    } else if (note === this._voice) {
-      this._env.triggerAttackRelease(noteDuration, time, gain);
     }
   };
 
