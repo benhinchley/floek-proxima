@@ -24,12 +24,15 @@ export class Motion extends Component {
   _accelerometer = null;
   _history = [0.0, 0.0, 0.0];
   _height = 140.0; // 1.4m in centimeters
+
+  // FIXME(@benhinchley): need to smooth these values out a little
   _speedScale = scale(0, speedUpperBounds, 0.0, 1.0);
   _heightScale = scale(0, 1.8, 0.0, 1.0);
 
   componentDidMount() {
     const { frequency } = this.props;
 
+    // FIXME(@benhinchley): fallback to devicemotion api if not present
     if ("Accelerometer" in window) {
       this._accelerometer = new window.Accelerometer({
         frequency,
@@ -74,9 +77,9 @@ export class Motion extends Component {
     const maxSpeed = isWithin(max([x, z]), 9.5, 10.1) ? 0 : max([x, z]);
     const scaledSpeed = this._speedScale(maxSpeed);
     const roundedSpeed = round(scaledSpeed, 4);
-    
-    console.log({maxSpeed, scaledSpeed, roundedSpeed});
-    
+
+    console.log({ maxSpeed, scaledSpeed, roundedSpeed });
+
     onSpeedChange(roundedSpeed);
     onHeightChange(this._computeHeight(y, direction));
     onDirectionChange(direction);
