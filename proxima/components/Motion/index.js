@@ -71,7 +71,13 @@ export class Motion extends Component {
     };
     const direction = this._computeDirection(change);
 
-    onSpeedChange(round(this._speedScale(max([change.x, change.z]))), 4);
+    const maxSpeed = isWithin(max([x, z]), 9.5, 10.1) ? 0 : max([x, z]);
+    const scaledSpeed = this._speedScale(maxSpeed);
+    const roundedSpeed = round(scaledSpeed, 4);
+    
+    console.log({maxSpeed, scaledSpeed, roundedSpeed});
+    
+    onSpeedChange(roundedSpeed);
     onHeightChange(this._computeHeight(y, direction));
     onDirectionChange(direction);
   };
