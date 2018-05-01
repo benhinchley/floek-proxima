@@ -119,6 +119,11 @@ export class Movement extends Component {
       socket.off("floek:movement:height", this._audienceHandleHeightChange);
       socket.off("floek:movement:speed", this._audienceHandleSpeedChange);
     }
+    
+    if (role === ROLE_PERFORMER) {
+      this._volume.dispose()
+      this._source = this._filter = this._volume = null;
+    }
   }
 
   render() {
@@ -174,8 +179,9 @@ export class Movement extends Component {
     const { speed } = this.state;
 
     const value = 1.0 - speed;
-    const amplitute = scale(0.0, 1.0, -Infinity, 0.0)(value);
-    this._volume.rampTo(amplitute, 0.05);
+    const amplitute = scale(0.0, 1.0, -64.0, 0.0)(value);
+    console.log(speed, value, amplitute)
+    this._volume.volume.rampTo(amplitute, 0.05);
   };
 
   _audienceHandleHeightChange = ({ id, height }) => {
@@ -190,7 +196,8 @@ export class Movement extends Component {
     this.setState(state => ({ ...state, speed }), this._adjustAmplitude);
   };
 
-  _handleHeightChange = height =>
+  _handleHeightChange = height => {
+    console.log({height})
     this.setState(
       state => ({ ...state, height }),
       () => {
@@ -207,8 +214,11 @@ export class Movement extends Component {
         }
       }
     );
+  }
 
-  _handleSpeedChange = speed =>
+  _handleSpeedChange = speed => {
+    if (isNaN(speed)) speed = 0;
+    
     this.setState(
       state => ({ ...state, speed }),
       () => {
@@ -225,4 +235,5 @@ export class Movement extends Component {
         }
       }
     );
+  }
 }
