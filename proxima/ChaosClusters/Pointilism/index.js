@@ -15,7 +15,6 @@ export class Pointilism extends Component {
   _sine = null;
   _env = null;
   _sequence = null;
-  _freqScale = null;
   _noteDurScale = null;
   _gainScale = null;
 
@@ -34,7 +33,6 @@ export class Pointilism extends Component {
       return;
     }
 
-    this._freqScale = scale(0, 35, frequencyRange[0], frequencyRange[1]);
     this._noteDurScale = scale(
       bpmRange[0],
       bpmRange[1],
@@ -58,7 +56,7 @@ export class Pointilism extends Component {
     this._sine = new Tone.Oscillator({
       type: "square4",
       frequency:
-        frequencyRange[0] + randomInt((frequencyRange[0], frequencyRange[1]))
+        frequencyRange[0] + randomInt(frequencyRange[1] - frequencyRange[0])
     })
       .connect(this._env)
       .start();

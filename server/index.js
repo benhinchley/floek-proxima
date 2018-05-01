@@ -27,11 +27,11 @@ io.on("connect", socket => {
   });
 
   // motion data
-  socket.on("floek:movement:height", ({ id, height }) => {
-    console.log(id, data);
+  socket.on("floek:movement:height", data => {
+    socket.broadcast.emit("floek:movement:height", data);
   });
-  socket.on("floek:movement:speed", ({ id, speed }) => {
-    console.log(id, data);
+  socket.on("floek:movement:speed", data => {
+    socket.broadcast.emit("floek:movement:speed", data);
   });
 
   // this is an external feed
@@ -39,6 +39,7 @@ io.on("connect", socket => {
     socket.broadcast.emit("floek:proxima:heartbeat", { sensor });
   });
 
+  // audience trigger for heartrate sound
   socket.on("floek:proxima:heartbeat:audience", data => {
     socket.broadcast.emit("floek:proxima:heartbeat:audience", data);
   });

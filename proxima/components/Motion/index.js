@@ -25,6 +25,7 @@ export class Motion extends Component {
   _history = [0.0, 0.0, 0.0];
   _height = 140.0; // 1.4m in centimeters
   _speedScale = scale(0, speedUpperBounds, 0.0, 1.0);
+  _heightScale = scale(0, 1.8, 0.0, 1.0);
 
   componentDidMount() {
     const { frequency } = this.props;
@@ -117,8 +118,7 @@ export class Motion extends Component {
       this._height -= cmChange;
     }
 
-    // @TODO(@benhinchley): scale this value between [0.0 - 1.0]
-    return this._height;
+    return this._heightScale(this._height);
   };
 
   render() {

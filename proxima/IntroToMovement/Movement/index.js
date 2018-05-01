@@ -2,7 +2,7 @@ import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import Tone from "../../Tone";
 import { Socket } from "socket.io-client";
-import { randomInt } from "../../utils";
+import { randomInt, scale } from "../../utils";
 
 import { Motion } from "../../components/Motion";
 import { ROLE_AUDIENCE, ROLE_PERFORMER } from "../../constants";
@@ -22,6 +22,9 @@ export class Movement extends Component {
 
   _volume = null;
   _source = null;
+  _filter = null;
+
+  _freqScale = scale(0.0, 1.0, 74.42, 554.37);
 
   componentDidMount() {
     const { role, socket } = this.props;
@@ -46,11 +49,56 @@ export class Movement extends Component {
 
     if (_sensorID !== null && this._source === null) {
       if (_sensorID === "A") {
-        // TODO(@benhinchley): setup synth tone for andrew
+        this._source = [
+          new Tone.Oscillator({
+            type: "sine",
+            frequency: 74.42,
+            partials: [
+              0.1119713353,
+              0.1439631454,
+              0,
+              0,
+              0,
+              0.0319918101,
+              0,
+              0.04798771514,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0.02960842024,
+              0,
+              0.1184816687
+            ]
+          }).connect(this._volume),
+          new Tone.Oscillator({
+            type: "sine",
+            frequency: 270.6179112,
+            partials: [0.1279672404, 0, 0, 0.09597543029]
+          }).connect(this._volume),
+          new Tone.Oscillator({
+            type: "sine",
+            frequency: 304.4454478,
+            partials: [0.1439631454]
+          }).connect(this._volume),
+          new Tone.Oscillator({
+            type: "sine",
+            frequency: 676.5454545,
+            partials: [0.1184816687]
+          }).connect(this._volume),
+          new Tone.Oscillator({
+            type: "sine",
+            frequency: 947.165666,
+            partials: [0.02960842024]
+          }).connect(this._volume)
+        ];
       } else if (_sensorID === "B") {
         // setup pink noise
         this._source = new Tone.Noise("pink").start();
-        this._source.connect(this._volume);
+        this._filter = new Tone.Filter(440, "highpass");
+        this._source.connect(this._filter);
+        this._filter.connect(this._volume);
       }
     }
   }
@@ -97,8 +145,20 @@ export class Movement extends Component {
     ) : null;
   }
 
-  // TODO(@benhinchley): connect height to pitch / filter center
-  _adjustPitch = () => {};
+  _adjustPitch = () => {
+    const { height, _sensorID } = this.state;
+
+    if (_sensorID === "A") {
+      const multipliers = [1.0, 3.6364, 4.0909, 9.0909, 12.7273];
+
+      const fundemental = this._freqScale(height);
+      this._source.forEach((osc, idx) => {
+        osc.frequency.value = fundemental * multipliers[idx];
+      });
+    } else if (_sensorID === "B") {
+      this._filter.frequency.value = this._freqScale(height);
+    }
+  };
 
   _adjustAmplitude = () => {
     const { speed } = this.state;

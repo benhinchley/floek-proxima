@@ -1,6 +1,12 @@
 let Tone = null;
 if (process.browser) {
-  Tone = require("tone");
+  if (Tone === null) {
+    Tone = require("tone");
+  }
+
+  if (process.env.NODE_ENV !== "production") {
+    window["Tone"] = Tone;
+  }
 }
 
 module.exports = Tone;

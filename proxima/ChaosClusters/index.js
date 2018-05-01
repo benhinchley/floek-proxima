@@ -64,8 +64,7 @@ export class ChaosClusters extends Component {
 
         {section === 25 ? (
           <Drone
-            bpm={6}
-            duration={10}
+            duration={10.0}
             freqRange={[60.0, 9000.0]}
             gain={1}
             onSectionEnd={() =>
@@ -73,8 +72,17 @@ export class ChaosClusters extends Component {
             }
           />
         ) : null}
+
         {section === 26 ? /* silence */ null : null}
-        {section >= 27 ? <IntroToMovement role={role} socket={socket} /> : null}
+
+        {section >= 27 ? (
+          <Fragment>
+            {section === 27 && role === ROLE_PERFORMER ? (
+              <button onClick={this._handleNextSection}>next section</button>
+            ) : null}
+            <IntroToMovement role={role} socket={socket} />
+          </Fragment>
+        ) : null}
         {section === 28 ? <Klangfarben role={role} socket={socket} /> : null}
       </Fragment>
     );
@@ -124,6 +132,12 @@ export class ChaosClusters extends Component {
   componentWillUnmount() {
     const { socket } = this.props;
     socket.off("floek:chaos:section", this._audienceUpdateSection);
+  }
+
+  componentDidUpdate() {
+    const { section, showNextButton } = this.state;
+    if (section === 26 && !showNextButton)
+      this.setState(state => ({ showNextButton: true }));
   }
 
   _audienceUpdateSection = ({ section }) =>

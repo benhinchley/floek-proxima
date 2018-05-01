@@ -45,15 +45,12 @@ export class Klangfarben extends Component {
       socket.on("floek:chaos:klangfarben:sequence", this._handleSequenceUpdate);
     }
 
-    console.log(this._voice);
-
     Tone.Transport.bpm.value = 60;
     Tone.Transport.stop();
 
     this._part = new Tone.Part(this._play, sequences[sequence]).start(0);
     Tone.Transport.start();
     Tone.Transport.seconds = 0;
-    console.log(Tone.Transport);
   }
 
   _handleSequenceUpdate = ({ sequence }) =>
@@ -66,11 +63,9 @@ export class Klangfarben extends Component {
     this._part = new Tone.Part(this._play, sequences[sequence]).start(0);
     Tone.Transport.start();
     Tone.Transport.seconds = 0;
-    console.log(Tone.Transport);
   }
 
   _play = (time, { voices, duration, freqs, gain }) => {
-    console.log(time, voices.indexOf(this._voice));
     const index = voices.indexOf(this._voice);
     if (index === -1) return;
 

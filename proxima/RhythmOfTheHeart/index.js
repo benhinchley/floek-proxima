@@ -1,9 +1,16 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import Tone from "../Tone";
+import { Socket } from "socket.io-client";
 import { ROLE_PERFORMER, ROLE_AUDIENCE } from "../constants";
 import { randomInt } from "../utils";
 
 export class RhythmOfTheHeart extends Component {
+  static propTypes = {
+    role: PropTypes.string,
+    socket: PropTypes.instanceOf(Socket)
+  };
+
   static defaultProps = {
     role: ROLE_AUDIENCE
   };
@@ -77,54 +84,40 @@ export class RhythmOfTheHeart extends Component {
     // If the heartbeat is active AND the sensor incoming matches the key for the deivce
     // play the sound
     if (this.state.heartbeat && sensor === HB) {
-      this.instruments[HB].triggerAttackRelease("C4", "8n");
+      this.instruments[HB].triggerAttackRelease("C4", "16n");
     }
   };
 }
 
-const setupInstruments = () => {
+export const setupInstruments = () => {
   // If we are not running in the browser, or if we
   // have not required tone do nothing.
   if (!process.browser || Tone === null) return null;
 
-  const heartbeatA = new Tone.MonoSynth({
-    oscillator: {
-      type: "square8"
-    },
+  const heartbeatA = new Tone.MetalSynth({
+    frequency: 233.08,
     envelope: {
-      attack: 0.05,
-      decay: 0.3,
-      sustain: 0.4,
-      release: 0.8
-    },
-    filterEnvelope: {
       attack: 0.001,
-      decay: 0.7,
-      sustain: 0.1,
-      release: 0.8,
-      baseFrequency: 300,
-      octaves: 4
-    }
+      decay: 0.8,
+      release: 0.2
+    },
+    harmonicity: 5.1,
+    modulationIndex: 32,
+    resonance: 932.33,
+    octaves: 4
   });
 
-  const heartbeatB = new Tone.MonoSynth({
-    oscillator: {
-      type: "square8"
-    },
+  const heartbeatB = new Tone.MetalSynth({
+    frequency: 1864.66,
     envelope: {
-      attack: 0.05,
-      decay: 0.3,
-      sustain: 0.4,
-      release: 0.8
-    },
-    filterEnvelope: {
       attack: 0.001,
-      decay: 0.7,
-      sustain: 0.1,
-      release: 0.8,
-      baseFrequency: 300,
-      octaves: 4
-    }
+      decay: 1.4,
+      release: 0.2
+    },
+    harmonicity: 5.1,
+    modulationIndex: 32,
+    resonance: 7458.62,
+    octaves: 1.5
   });
 
   return {

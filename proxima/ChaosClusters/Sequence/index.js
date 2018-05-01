@@ -28,7 +28,7 @@ export class Sequence extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     // if the props haven't changed do nothing
-    if (_.isEqual(prevProps.frequencies, this.props.frequencies)) {
+    if (_.isEqual(prevProps.tempo, this.props.tempo)) {
       return;
     }
 
