@@ -48,44 +48,32 @@ export class Section extends Component {
 
     return (
       <Fragment>
-        {single ? (
-          <Super
-            tempos={tempos}
-            frequency={frequency}
-            noteDurations={noteDurations}
-            gain={gain}
-            repeat={repeat}
-            loopAfterRepeats={loopAfterRepeats}
-            onSectionEnd={onSectionEnd}
-          />
-        ) : (
-          <Sequence
-            voices={voices}
-            tempo={tempo}
-            frequencies={frequencies}
-            noteDuration={noteDuration}
-            gain={gain}
-            repeat={repeat}
-            loopAfterRepeats={loopAfterRepeats}
-            wave={wave}
-            next={() =>
-              this.setState(
-                state => ({
-                  ...state,
-                  sequence: (state.sequence += 1)
-                }),
-                () => {
-                  const { sequences, onSectionEnd } = this.props;
-                  const { sequence } = this.state;
+        <Sequence
+          voices={voices}
+          tempo={tempo}
+          frequencies={frequencies}
+          noteDuration={noteDuration}
+          gain={gain}
+          repeat={repeat}
+          loopAfterRepeats={loopAfterRepeats}
+          wave={wave}
+          next={() =>
+            this.setState(
+              state => ({
+                ...state,
+                sequence: (state.sequence += 1)
+              }),
+              () => {
+                const { sequences, onSectionEnd } = this.props;
+                const { sequence } = this.state;
 
-                  if (sequence === sequences.length - 1) {
-                    onSectionEnd();
-                  }
+                if (sequence === sequences.length - 1) {
+                  onSectionEnd();
                 }
-              )
-            }
-          />
-        )}
+              }
+            )
+          }
+        />
         {children}
       </Fragment>
     );

@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import Tone from "../../Tone";
 import { Socket } from "socket.io-client";
@@ -18,7 +18,7 @@ export class Klangfarben extends Component {
     role: ROLE_AUDIENCE
   };
 
-  state = { sequence: 0 };
+  state = { sequence: 0, done: false };
 
   _voice = null;
   _synth = null;
@@ -46,11 +46,11 @@ export class Klangfarben extends Component {
     }
 
     Tone.Transport.bpm.value = 60;
+    Tone.Transport.seconds = 0;
     Tone.Transport.stop();
 
     this._part = new Tone.Part(this._play, sequences[sequence]).start(0);
     Tone.Transport.start();
-    Tone.Transport.seconds = 0;
   }
 
   _handleSequenceUpdate = ({ sequence }) =>
@@ -59,10 +59,13 @@ export class Klangfarben extends Component {
   componentDidUpdate(prevProps, prevState) {
     const { sequence } = this.state;
     Tone.Transport.stop();
+    this._part.dispose();
 
+    console.log({ voice: this._voice, sequence: sequences[sequence] });
+
+    Tone.Transport.seconds = 0;
     this._part = new Tone.Part(this._play, sequences[sequence]).start(0);
     Tone.Transport.start();
-    Tone.Transport.seconds = 0;
   }
 
   _play = (time, { voices, duration, freqs, gain }) => {
@@ -85,8 +88,15 @@ export class Klangfarben extends Component {
 
   render() {
     const { role } = this.props;
+    const { done } = this.state;
     return role === ROLE_PERFORMER ? (
-      <button onClick={this._nextSequence}>next sequence</button>
+      <Fragment>
+        {done ? (
+          <h1>DONE</h1>
+        ) : (
+          <button onClick={this._nextSequence}>next sequence</button>
+        )}
+      </Fragment>
     ) : null;
   }
 
@@ -101,6 +111,9 @@ export class Klangfarben extends Component {
         if (role === ROLE_PERFORMER) {
           const { sequence } = this.state;
           socket.emit("floek:chaos:klangfarben:sequence", { sequence });
+          if (sequence === sequences.length - 1) {
+            this.setState(state => ({ ...state, done: true }));
+          }
         }
       }
     );

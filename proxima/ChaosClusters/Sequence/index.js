@@ -27,15 +27,12 @@ export class Sequence extends Component {
   _repeats = 0;
 
   componentDidUpdate(prevProps, prevState) {
-    // if the props haven't changed do nothing
-    if (_.isEqual(prevProps.tempo, this.props.tempo)) {
-      return;
-    }
-
     Tone.Transport.stop();
 
     if (this._sequence !== null) {
       this._sequence.stop();
+      this._env.disconnect(Tone.Master);
+      this._sine.dispose();
       this._repeats = 0;
     }
 
@@ -51,6 +48,8 @@ export class Sequence extends Component {
 
     if (this._sequence !== null) {
       this._sequence.stop();
+      this._sine.dispose();
+      this._env.disconnect(Tone.Master);
     }
     this._env = this._sine = this._sequence = null;
   }

@@ -48,7 +48,9 @@ io.on("connect", socket => {
 });
 
 app.prepare().then(() => {
-  express.use("*", enforceHTTPS);
+  if (process.env.NODE_ENV === "production") {
+    express.use("*", enforceHTTPS);
+  }
   express.get("*", (req, res) => handler(req, res));
 
   server.listen(port, err => {

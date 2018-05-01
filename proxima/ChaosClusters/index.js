@@ -22,6 +22,8 @@ export class ChaosClusters extends Component {
     const { role, socket } = this.props;
     const { section, showNextButton } = this.state;
 
+    console.log(section, sections[section]);
+
     return (
       <Fragment>
         {role === ROLE_PERFORMER && showNextButton ? (
@@ -30,19 +32,10 @@ export class ChaosClusters extends Component {
           </button>
         ) : null}
 
-        {section >= 0 && section <= 12 ? (
+        {section >= 0 && section <= 23 ? (
           <Section
             sequences={sections[section]}
-            onSectionEnd={() =>
-              this.setState(state => ({ showNextButton: true }))
-            }
-          />
-        ) : null}
-
-        {section >= 13 && section <= 23 ? (
-          <Section
-            sequences={sections[section]}
-            wave="square"
+            wave={section >= 0 && section <= 12 ? "sine" : "square"}
             onSectionEnd={() =>
               this.setState(state => ({ showNextButton: true }))
             }
