@@ -4,6 +4,8 @@ const next = require("next");
 const server = require("http").Server(express);
 const io = require("socket.io")(server);
 
+const { enforceHTTPS } = require("./utils");
+
 const dev = process.env.NODE_ENV !== "production";
 const port = process.env.PORT || 3000;
 
@@ -46,6 +48,7 @@ io.on("connect", socket => {
 });
 
 app.prepare().then(() => {
+  express.use("*", enforceHTTPS);
   express.get("*", (req, res) => handler(req, res));
 
   server.listen(port, err => {
