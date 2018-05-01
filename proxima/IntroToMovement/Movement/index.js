@@ -71,27 +71,37 @@ export class Movement extends Component {
               0,
               0.1184816687
             ]
-          }).connect(this._volume),
+          })
+            .connect(this._volume)
+            .start(),
           new Tone.Oscillator({
             type: "sine",
             frequency: 270.6179112,
             partials: [0.1279672404, 0, 0, 0.09597543029]
-          }).connect(this._volume),
+          })
+            .connect(this._volume)
+            .start(),
           new Tone.Oscillator({
             type: "sine",
             frequency: 304.4454478,
             partials: [0.1439631454]
-          }).connect(this._volume),
+          })
+            .connect(this._volume)
+            .start(),
           new Tone.Oscillator({
             type: "sine",
             frequency: 676.5454545,
             partials: [0.1184816687]
-          }).connect(this._volume),
+          })
+            .connect(this._volume)
+            .start(),
           new Tone.Oscillator({
             type: "sine",
             frequency: 947.165666,
             partials: [0.02960842024]
-          }).connect(this._volume)
+          })
+            .connect(this._volume)
+            .start()
         ];
       } else if (_sensorID === "B") {
         // setup pink noise
