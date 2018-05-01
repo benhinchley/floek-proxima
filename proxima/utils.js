@@ -26,3 +26,12 @@ export const isWithin = (value, min, max) => {
   if (value >= min && value <= max) return true;
   return false;
 };
+
+export const unNegative = value => {
+  const sign = Math.sign(value);
+  if (sign === 1 || sign === 0) {
+    return value;
+  } else if (sign === -1) {
+    return 1 * value;
+  }
+};

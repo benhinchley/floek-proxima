@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 
-import { round, max, scale, isWithin } from "../../utils";
+import { round, max, scale, isWithin, unNegative } from "../../utils";
 
 const NOP = () => {};
-const speedUpperBounds = 3.5;
+const speedUpperBounds = 15;
 
 export class Motion extends Component {
   static propTypes = {
@@ -25,41 +25,50 @@ export class Motion extends Component {
   _history = [0.0, 0.0, 0.0];
   _height = 140.0; // 1.4m in centimeters
 
-  // FIXME(@benhinchley): need to smooth these values out a little
   _speedScale = scale(0, speedUpperBounds, 0.0, 1.0);
   _heightScale = scale(0, 1.8, 0.0, 1.0);
 
   componentDidMount() {
     const { frequency } = this.props;
 
-    // FIXME(@benhinchley): fallback to devicemotion api if not present
     if ("Accelerometer" in window) {
       this._accelerometer = new window.Accelerometer({
         frequency,
         referenceFrame: "screen"
       });
+
+      this._accelerometer.addEventListener("reading", this._handleReading);
+      this._accelerometer.start();
     }
 
     if (this._accelerometer === null) {
       console.error(
-        "Accelerometer not found in window object, abandoning all other setup."
+        "Accelerometer not found in window object, falling back to devicemotion api."
       );
-      return;
-    }
 
-    this._accelerometer.addEventListener("reading", this._handleReading);
-    this._accelerometer.start();
+      window.addEventListener(
+        "devicemotion",
+        this._handleDeviceMotionEvent,
+        true
+      );
+    }
   }
 
   componentWillUnmount() {
     if (this._accelerometer === null) {
+      window.removeEventListener("devicemotion", this._handleDeviceMotionEvent);
       return;
     }
     this._accelerometer.removeEventListener("reading", this._handleReading);
   }
 
   _handleReading = () => {
-    const { onHeightChange, onSpeedChange, onDirectionChange } = this.props;
+    const {
+      frequency,
+      onHeightChange,
+      onSpeedChange,
+      onDirectionChange
+    } = this.props;
 
     const [x, y, z] = [
       round(this._accelerometer.x),
@@ -74,14 +83,16 @@ export class Motion extends Component {
     };
     const direction = this._computeDirection(change);
 
-    const maxSpeed = isWithin(max([x, z]), 9.5, 10.1) ? 0 : max([x, z]);
+    const maxSpeed = isWithin(max([unNegative(x), unNegative(z)]), 9.5, 10.1)
+      ? 0
+      : max([unNegative(x), unNegative(z)]);
     const scaledSpeed = this._speedScale(maxSpeed);
     const roundedSpeed = round(scaledSpeed, 4);
 
-    console.log({ maxSpeed, scaledSpeed, roundedSpeed });
-
     onSpeedChange(roundedSpeed);
-    onHeightChange(this._computeHeight(y, direction));
+    onHeightChange(
+      this._computeHeight(unNegative(y), 1 / frequency * 1000, direction)
+    );
     onDirectionChange(direction);
   };
 
@@ -92,34 +103,31 @@ export class Motion extends Component {
       z: null
     };
 
-    if (change.x > 1) {
+    if (Math.sign(change.x) === 1) {
       direction.x = "LEFT";
-    } else if (change.x < -1) {
+    } else if (Math.sign(change.x) === -1) {
       direction.x = "RIGHT";
     }
 
-    if (change.y > 1) {
+    if (Math.sign(change.y) === 1) {
       direction.y = "UP";
-    } else if (change.y < -1) {
+    } else if (Math.sign(change.y) === -1) {
       direction.y = "DOWN";
     }
 
-    if (change.z > 1) {
+    if (Math.sign(change.z) === 1) {
       direction.z = "FORWARD";
-    } else if (change.z < -1) {
+    } else if (Math.sign(change.z) === -1) {
       direction.z = "BACKWARD";
     }
 
     return direction;
   };
 
-  _computeHeight = (y, direction) => {
-    const { frequency } = this.props;
-    const cycle = 1 / frequency * 1000;
-
+  _computeHeight = (value, cycle, direction) => {
     // remove gravity from the equation
-    const cmPerMs = isWithin(y, 9.5, 10.1) ? 0 : y / 10;
-    const cmChange = cmPerMs * cycle;
+    const cmPerMs = isWithin(value, 9.5, 10.1) ? 0 : value / 10;
+    const cmChange = unNegative(cmPerMs * cycle);
 
     if (direction.y === "UP") {
       this._height += cmChange;
@@ -128,6 +136,37 @@ export class Motion extends Component {
     }
 
     return this._heightScale(this._height);
+  };
+
+  _handleDeviceMotionEvent = ({
+    accelerationIncludingGravity: acceleration,
+    interval: cycle
+  }) => {
+    const { onHeightChange, onSpeedChange, onDirectionChange } = this.props;
+
+    const [x, y, z] = [
+      round(acceleration.x),
+      round(acceleration.y),
+      round(acceleration.z)
+    ];
+
+    // z and y axis are flipped due to difference in how the apis work
+    const change = {
+      x: x != 0 ? round(history[0] - x) : 0, // LEFT, RIGHT
+      y: x != 0 ? round(history[1] - z) : 0, // UP, DOWN
+      z: x != 0 ? round(history[2] - y) : 0 // FORWARDS, BACKWARDS
+    };
+    const direction = this._computeDirection(change);
+
+    const maxSpeed = isWithin(max([unNegative(x), unNegative(y)]), 9.5, 10.1)
+      ? 0
+      : max([unNegative(x), unNegative(y)]);
+    const scaledSpeed = this._speedScale(maxSpeed);
+    const roundedSpeed = round(scaledSpeed, 4);
+
+    onSpeedChange(roundedSpeed);
+    onHeightChange(this._computeHeight(unNegative(z), cycle, direction));
+    onDirectionChange(direction);
   };
 
   render() {
