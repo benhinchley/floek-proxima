@@ -36,7 +36,9 @@ class Performer extends Component {
         </Head>
 
         <div>
-          <h1>Proxima :: Performer</h1>
+          <h1 style={{ marginTop: 0, marginBottom: ".5rem" }}>
+            Proxima :: Performer
+          </h1>
           <Proxima role={ROLE_PERFORMER} socket={this.state.socket} />
         </div>
       </Fragment>

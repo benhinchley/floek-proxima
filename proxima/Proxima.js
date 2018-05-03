@@ -117,7 +117,11 @@ export class Proxima extends Component {
           </div>
         ) : null}
 
-        {role === ROLE_PERFORMER ? <h2>{titles[current]}</h2> : null}
+        {role === ROLE_PERFORMER ? (
+          <h2 style={{ marginTop: 0, marginBottom: ".75rem" }}>
+            {titles[current]}
+          </h2>
+        ) : null}
 
         <Current role={role} socket={socket} />
 

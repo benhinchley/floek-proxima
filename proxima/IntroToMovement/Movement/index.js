@@ -4,6 +4,7 @@ import Tone from "../../Tone";
 import { Socket } from "socket.io-client";
 import { randomInt, scale } from "../../utils";
 
+import { Container } from "../../ui/Container";
 import { Button } from "../../ui/Button";
 import { Motion } from "../../components/Motion";
 import { ROLE_AUDIENCE, ROLE_PERFORMER } from "../../constants";
@@ -134,7 +135,7 @@ export class Movement extends Component {
     return role === ROLE_PERFORMER ? (
       <Fragment>
         {_sensorID === null ? (
-          <Fragment>
+          <Container>
             <Button
               onClick={() =>
                 this.setState(state => ({ ...state, _sensorID: "A" }))
@@ -149,7 +150,7 @@ export class Movement extends Component {
             >
               B
             </Button>
-          </Fragment>
+          </Container>
         ) : null}
 
         <Motion
