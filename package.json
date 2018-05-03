@@ -5,7 +5,8 @@
   "license": "MIT",
   "scripts": {
     "build": "next build",
-    "start": "next build && node server"
+    "start": "next build && node server",
+    "start:hb": "node heartbeat-server"
   },
   "dependencies": {
     "cuid": "^2.1.1",
