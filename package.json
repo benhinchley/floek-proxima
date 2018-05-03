@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "build": "next build",
-    "start": "node server"
+    "start": "next build && node server"
   },
   "dependencies": {
     "cuid": "^2.1.1",
@@ -21,7 +21,8 @@
     "socket.io": "^2.1.0",
     "socket.io-client": "^2.1.0",
     "styled-components": "^3.2.6",
-    "tone": "13.1.5"
+    "tone": "13.1.5",
+    "startaudiocontext": "^1.2.1"
   },
   "devDependencies": {
     "load-json-file": "^4.0.0",
