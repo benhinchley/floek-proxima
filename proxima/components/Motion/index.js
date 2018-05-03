@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import { round, max, scale, isWithin, unNegative } from "../../utils";
 
 const NOP = () => {};
-const speedUpperBounds = 15;
+const speedUpperBounds = 3.5;
 
 export class Motion extends Component {
   static propTypes = {
@@ -25,7 +25,7 @@ export class Motion extends Component {
   _history = [0.0, 0.0, 0.0];
   _height = 140.0; // 1.4m in centimeters
 
-  _speedScale = scale(0, speedUpperBounds, 0.0, 1.0);
+  _speedScale = scale(0.5, speedUpperBounds, 0.0, 1.0);
   _heightScale = scale(0, 1.8, 0.0, 1.0);
 
   componentDidMount() {
@@ -88,6 +88,8 @@ export class Motion extends Component {
       : max([unNegative(x), unNegative(z)]);
     const scaledSpeed = this._speedScale(maxSpeed);
     const roundedSpeed = round(scaledSpeed, 4);
+    
+    console.log({maxSpeed, roundedSpeed})
 
     onSpeedChange(roundedSpeed);
     onHeightChange(

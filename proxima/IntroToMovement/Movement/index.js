@@ -2,7 +2,7 @@ import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import Tone from "../../Tone";
 import { Socket } from "socket.io-client";
-import { randomInt, scale } from "../../utils";
+import { randomInt, scale, isWithin } from "../../utils";
 
 import { Container } from "../../ui/Container";
 import { Button } from "../../ui/Button";
@@ -164,6 +164,7 @@ export class Movement extends Component {
 
   _adjustPitch = () => {
     const { height, _sensorID } = this.state;
+    console.log({height})
 
     if (_sensorID === "A") {
       const multipliers = [1.0, 3.6364, 4.0909, 9.0909, 12.7273];
@@ -177,12 +178,25 @@ export class Movement extends Component {
     }
   };
 
+  _previousSpeed = 0.05
   _adjustAmplitude = () => {
     const { speed } = this.state;
-
-    const value = 1.0 - speed;
-    const amplitute = scale(0.0, 1.0, -64.0, 0.0)(value);
-    this._volume.volume.rampTo(amplitute, 0.05);
+    if (isWithin(speed, this._previousSpeed-.05, this._previousSpeed+.05)) {
+      // if there isn't significant change in speed do nothing.
+      this._previousSpeed = speed;
+      return;
+    }
+    
+    if (speed <= 0.95) {
+      this._volume.volume.mute = false;
+      const value = speed;
+      const amplitute = scale(0.0, 1.0, -64, 0.0)(value);
+      this._volume.volume.rampTo(amplitute, 0.05);
+    } else {
+      this._volume.volume.mute = true;
+    }
+    
+    this._previousSpeed = speed;
   };
 
   _audienceHandleHeightChange = ({ id, height }) => {
