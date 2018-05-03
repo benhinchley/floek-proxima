@@ -72,10 +72,6 @@ export class Proxima extends Component {
       return <Button onClick={this._next}>start</Button>;
     }
 
-    if (Current === null || Current === undefined) {
-      return null;
-    }
-
     return (
       <Container direction="column">
         {!audioRunning ? (
@@ -123,7 +119,7 @@ export class Proxima extends Component {
           </h2>
         ) : null}
 
-        <Current role={role} socket={socket} />
+        {Current ? <Current role={role} socket={socket} /> : null }
 
         {role === ROLE_PERFORMER ? (
           <AbsoluteContainer
