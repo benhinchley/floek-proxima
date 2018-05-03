@@ -19,11 +19,16 @@ socket.on("message", buffer => {
     return;
   }
 
-  bundle.elements.forEach(message => {
-    const sensor = message.address.split("/")[3];
+  bundle.elements.forEach(({ address, args }) => {
+    console.log({ time: new Date(), address, args });
+    const sensor = address.split("/")[3];
     wss.emit("floek:heartbeat", { sensor });
   });
 });
 
-console.debug("binding to port 9000");
+socket.on("listening", () => {
+  const address = socket.address();
+  console.log(`> listening on ${address.address}:${address.port}`);
+});
+
 socket.bind(9000);
