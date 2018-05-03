@@ -8,6 +8,8 @@ import { randomInt } from "../../utils";
 import { voices } from "./data/voices";
 import { sequences } from "./data/sequences";
 
+import { Button } from "../../ui/Button";
+
 export class Klangfarben extends Component {
   static propTypes = {
     role: PropTypes.oneOf([ROLE_AUDIENCE, ROLE_PERFORMER]),
@@ -94,7 +96,7 @@ export class Klangfarben extends Component {
         {done ? (
           <h1>DONE</h1>
         ) : (
-          <button onClick={this._nextSequence}>next sequence</button>
+          <Button onClick={this._nextSequence}>next sequence</Button>
         )}
       </Fragment>
     ) : null;

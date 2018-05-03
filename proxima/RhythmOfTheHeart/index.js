@@ -1,9 +1,11 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import Tone from "../Tone";
 import { Socket } from "socket.io-client";
 import { ROLE_PERFORMER, ROLE_AUDIENCE } from "../constants";
 import { randomInt } from "../utils";
+
+import { Button } from "../ui/Button";
 
 export class RhythmOfTheHeart extends Component {
   static propTypes = {
@@ -23,16 +25,16 @@ export class RhythmOfTheHeart extends Component {
     if (this.props.role === ROLE_AUDIENCE) return null;
 
     return (
-      <div>
-        <button
+      <Fragment>
+        <Button
           onClick={() =>
             this.setState(state => ({ ...state, heartbeat: true }))
           }
         >
           hb sounds
-        </button>
+        </Button>
 
-        <button
+        <Button
           onClick={() =>
             this.props.socket.emit("floek:proxima:heartbeat:audience", {
               active: true
@@ -40,8 +42,8 @@ export class RhythmOfTheHeart extends Component {
           }
         >
           audience hb sounds
-        </button>
-      </div>
+        </Button>
+      </Fragment>
     );
   }
 

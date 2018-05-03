@@ -1,8 +1,12 @@
 import React, { Component } from "react";
+import { injectGlobal } from "styled-components";
 
 import storage from "../lib/storage";
 
 import { ROLE_AUDIENCE, ROLE_PERFORMER, CURRENT_SECTION } from "./constants";
+
+import { AbsoluteContainer, Container } from "./ui/Container";
+import { Button } from "./ui/Button";
 
 import { RhythmOfTheHeart } from "./RhythmOfTheHeart";
 import { IntroToMovement } from "./IntroToMovement";
@@ -10,6 +14,13 @@ import { ChaosClusters } from "./ChaosClusters";
 
 const sections = [RhythmOfTheHeart, IntroToMovement, ChaosClusters];
 const titles = ["Rhythm Of The Heart", "Intro To Movement", "Chaos Clusters"];
+
+injectGlobal`
+html, body {
+  font-family: Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono,
+    Bitstream Vera Sans Mono, Courier New, monospace, serif;
+}
+`;
 
 export class Proxima extends Component {
   static defaultProps = {
@@ -53,11 +64,7 @@ export class Proxima extends Component {
     const Current = sections[current];
 
     if (current === -1 && role === ROLE_PERFORMER) {
-      return (
-        <div>
-          <button onClick={this._next}>start</button>
-        </div>
-      );
+      return <Button onClick={this._next}>start</Button>;
     }
 
     if (Current === null || Current === undefined) {
@@ -65,7 +72,7 @@ export class Proxima extends Component {
     }
 
     return (
-      <div>
+      <Container direction="column">
         {role === ROLE_AUDIENCE ? (
           <div>
             <p>
@@ -106,12 +113,16 @@ export class Proxima extends Component {
         <Current role={role} socket={socket} />
 
         {role === ROLE_PERFORMER ? (
-          <div>
-            <button onClick={this._prev}>prev</button>
-            <button onClick={this._next}>next</button>
-          </div>
+          <AbsoluteContainer
+            position={{ bottom: "1rem", left: "1rem", right: "1rem" }}
+          >
+            <Container>
+              <Button onClick={this._prev}>prev</Button>
+              <Button onClick={this._next}>next</Button>
+            </Container>
+          </AbsoluteContainer>
         ) : null}
-      </div>
+      </Container>
     );
   }
 

@@ -5,6 +5,7 @@ import { randomInt, scale } from "../utils";
 
 import { sections } from "./data/sections";
 
+import { Button } from "../ui/Button";
 import { Section } from "./Section";
 import { Pointilism } from "./Pointilism";
 import { IntroToMovement } from "../IntroToMovement";
@@ -27,9 +28,9 @@ export class ChaosClusters extends Component {
     return (
       <Fragment>
         {role === ROLE_PERFORMER && showNextButton ? (
-          <button onClick={this._handleNextSection}>
+          <Button onClick={this._handleNextSection}>
             {section === -1 ? "start" : "next section"}
-          </button>
+          </Button>
         ) : null}
 
         {section >= 0 && section <= 23 ? (
