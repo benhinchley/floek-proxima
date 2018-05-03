@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { injectGlobal } from "styled-components";
-
+import StartAudioContext from "startaudiocontext";
+import Tone from "./Tone";
 import storage from "../lib/storage";
 
 import { ROLE_AUDIENCE, ROLE_PERFORMER, CURRENT_SECTION } from "./constants";
@@ -27,7 +28,7 @@ export class Proxima extends Component {
     role: ROLE_AUDIENCE
   };
 
-  state = { current: -1 };
+  state = { current: -1, audioRunning: false };
 
   componentDidMount() {
     const { role, socket } = this.props;
@@ -56,11 +57,17 @@ export class Proxima extends Component {
         }
       );
     });
+    
+    if (Tone !== null) {
+      StartAudioContext(Tone.context, '#root').then(this._audioRunning)
+    }
   }
+
+  _audioRunning = () => this.setState(state => ({...state, audioRunning: true}))
 
   render() {
     const { role, socket } = this.props;
-    const { current } = this.state;
+    const { current, audioRunning } = this.state;
     const Current = sections[current];
 
     if (current === -1 && role === ROLE_PERFORMER) {
@@ -73,6 +80,8 @@ export class Proxima extends Component {
 
     return (
       <Container direction="column">
+        {!audioRunning ? <h3>PLEASE TOUCH THE SCREEN, TO START AUDIO PLAYBACK</h3> : null}
+      
         {role === ROLE_AUDIENCE ? (
           <div>
             <p>
