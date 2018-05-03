@@ -70,7 +70,7 @@ export class ChaosClusters extends Component {
         {section >= 27 ? (
           <Fragment>
             {section === 27 && role === ROLE_PERFORMER ? (
-              <button onClick={this._handleNextSection}>next section</button>
+              <Button onClick={this._handleNextSection}>next section</Button>
             ) : null}
             <IntroToMovement role={role} socket={socket} />
           </Fragment>

@@ -3,7 +3,6 @@ import PropTypes from "prop-types";
 import _ from "lodash";
 
 import { Sequence } from "../Sequence";
-import { Super } from "../Super";
 
 // Section represents a set of sequences
 export class Section extends Component {
@@ -31,14 +30,10 @@ export class Section extends Component {
     if (seq === undefined) return null;
 
     const {
-      single,
       voices,
       tempo,
-      tempos,
-      frequency,
       frequencies,
       noteDuration,
-      noteDurations,
       gain,
       repeat,
       loopAfterRepeats
