@@ -57,13 +57,11 @@ export class Proxima extends Component {
         }
       );
     });
-    
+
     if (Tone !== null) {
-      StartAudioContext(Tone.context, '#root').then(this._audioRunning)
+      StartAudioContext(Tone.context, "#root").then(this._audioRunning);
     }
   }
-
-  _audioRunning = () => this.setState(state => ({...state, audioRunning: true}))
 
   render() {
     const { role, socket } = this.props;
@@ -80,8 +78,10 @@ export class Proxima extends Component {
 
     return (
       <Container direction="column">
-        {!audioRunning ? <h3>PLEASE TOUCH THE SCREEN, TO START AUDIO PLAYBACK</h3> : null}
-      
+        {!audioRunning ? (
+          <h3>PLEASE TOUCH THE SCREEN, TO START AUDIO PLAYBACK</h3>
+        ) : null}
+
         {role === ROLE_AUDIENCE ? (
           <div>
             <p>
@@ -164,4 +164,7 @@ export class Proxima extends Component {
       }
     );
   };
+
+  _audioRunning = () =>
+    this.setState(state => ({ ...state, audioRunning: true }));
 }
