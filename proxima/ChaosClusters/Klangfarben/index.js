@@ -63,8 +63,6 @@ export class Klangfarben extends Component {
     Tone.Transport.stop();
     this._part.dispose();
 
-    console.log({ voice: this._voice, sequence: sequences[sequence] });
-
     Tone.Transport.seconds = 0;
     this._part = new Tone.Part(this._play, sequences[sequence]).start(0);
     Tone.Transport.start();

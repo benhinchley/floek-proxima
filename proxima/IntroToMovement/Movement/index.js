@@ -56,22 +56,22 @@ export class Movement extends Component {
             type: "sine",
             frequency: 74.42,
             partials: [
-              0.1119713353,
-              0.1439631454,
+              0.09,
+              0.07,
               0,
               0,
               0,
-              0.0319918101,
+              0.07,
               0,
-              0.04798771514,
-              0,
-              0,
+              0.05,
               0,
               0,
               0,
-              0.02960842024,
               0,
-              0.1184816687
+              0,
+              0.02,
+              0,
+              0.009
             ]
           })
             .connect(this._volume)
@@ -79,28 +79,28 @@ export class Movement extends Component {
           new Tone.Oscillator({
             type: "sine",
             frequency: 270.6179112,
-            partials: [0.1279672404, 0, 0, 0.09597543029]
+            partials: [0.06, 0.009]
           })
             .connect(this._volume)
             .start(),
           new Tone.Oscillator({
             type: "sine",
             frequency: 304.4454478,
-            partials: [0.1439631454]
+            partials: [0.06]
           })
             .connect(this._volume)
             .start(),
           new Tone.Oscillator({
             type: "sine",
             frequency: 676.5454545,
-            partials: [0.1184816687]
+            partials: [0.08]
           })
             .connect(this._volume)
             .start(),
           new Tone.Oscillator({
             type: "sine",
             frequency: 947.165666,
-            partials: [0.02960842024]
+            partials: [0.008]
           })
             .connect(this._volume)
             .start()
@@ -164,7 +164,6 @@ export class Movement extends Component {
 
   _adjustPitch = () => {
     const { height, _sensorID } = this.state;
-    console.log({height})
 
     if (_sensorID === "A") {
       const multipliers = [1.0, 3.6364, 4.0909, 9.0909, 12.7273];
@@ -178,16 +177,10 @@ export class Movement extends Component {
     }
   };
 
-  _previousSpeed = 0.05
   _adjustAmplitude = () => {
     const { speed } = this.state;
-    if (isWithin(speed, this._previousSpeed-.05, this._previousSpeed+.05)) {
-      // if there isn't significant change in speed do nothing.
-      this._previousSpeed = speed;
-      return;
-    }
-    
-    if (speed <= 0.95) {
+
+    if (speed <= 0.9) {
       this._volume.volume.mute = false;
       const value = speed;
       const amplitute = scale(0.0, 1.0, -64, 0.0)(value);
@@ -195,7 +188,7 @@ export class Movement extends Component {
     } else {
       this._volume.volume.mute = true;
     }
-    
+
     this._previousSpeed = speed;
   };
 

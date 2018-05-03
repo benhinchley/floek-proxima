@@ -88,8 +88,6 @@ export class Motion extends Component {
       : max([unNegative(x), unNegative(z)]);
     const scaledSpeed = this._speedScale(maxSpeed);
     const roundedSpeed = round(scaledSpeed, 4);
-    
-    console.log({maxSpeed, roundedSpeed})
 
     onSpeedChange(roundedSpeed);
     onHeightChange(

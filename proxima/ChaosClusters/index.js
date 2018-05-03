@@ -23,8 +23,6 @@ export class ChaosClusters extends Component {
     const { role, socket } = this.props;
     const { section, showNextButton } = this.state;
 
-    console.log(section, sections[section]);
-
     return (
       <Fragment>
         {role === ROLE_PERFORMER && showNextButton ? (
