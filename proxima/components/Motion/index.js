@@ -75,8 +75,6 @@ export class Motion extends Component {
       round(this._accelerometer.y),
       round(this._accelerometer.z)
     ];
-    
-    console.log({x,y,z})
 
     const change = {
       x: x != 0 ? round(history[0] - x) : 0, // LEFT, RIGHT

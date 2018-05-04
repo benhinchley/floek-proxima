@@ -5,7 +5,7 @@ import { Socket } from "socket.io-client";
 import { ROLE_PERFORMER, ROLE_AUDIENCE } from "../constants";
 import { randomInt } from "../utils";
 
-import {Container} from "../ui/Container"
+import { Container } from "../ui/Container";
 import { Button } from "../ui/Button";
 
 export class RhythmOfTheHeart extends Component {
@@ -30,14 +30,22 @@ export class RhythmOfTheHeart extends Component {
         <Container>
           <Button
             onClick={() =>
-              this.setState(state => ({ ...state, heartbeat: true, _sensorID: "A" }))
+              this.setState(state => ({
+                ...state,
+                heartbeat: true,
+                _sensorID: "A"
+              }))
             }
           >
             A
           </Button>
           <Button
             onClick={() =>
-              this.setState(state => ({ ...state, heartbeat: true, _sensorID: "B" }))
+              this.setState(state => ({
+                ...state,
+                heartbeat: true,
+                _sensorID: "B"
+              }))
             }
           >
             B
@@ -77,17 +85,21 @@ export class RhythmOfTheHeart extends Component {
       socket.on("floek:proxima:heartbeat:audience", ({ active }) =>
         this.setState(state => ({ ...state, heartbeat: active }))
       );
-    
+
       this.sensor = randomInt(2) === 0 ? "A" : "B";
-      socket.on("floek:proxima:heartbeat", data => this._play(this.sensor)(data));
+      socket.on("floek:proxima:heartbeat", data =>
+        this._play(this.sensor)(data)
+      );
     } else if (role === ROLE_PERFORMER) {
-      socket.on("floek:proxima:heartbeat", data => this._play(this.state._sensorID)(data));
+      socket.on("floek:proxima:heartbeat", data =>
+        this._play(this.state._sensorID)(data)
+      );
     }
   }
 
   componentWillUnmount() {
     const { role, socket } = this.props;
-    
+
     socket.off("floek:proxima:heartbeat");
   }
 
@@ -95,8 +107,8 @@ export class RhythmOfTheHeart extends Component {
     // If the heartbeat is active AND the sensor incoming matches the key for the deivce
     // play the sound
     if (this.state.heartbeat && sensor === HB) {
-      const synth = this.instruments[HB]
-      synth.triggerAttack(233.08, "+0.1", Math.random()*0.5 + 0.5);
+      const synth = this.instruments[HB];
+      synth.triggerAttack(233.08, "+0.1", Math.random() * 0.5 + 0.5);
     }
   };
 }
@@ -107,25 +119,25 @@ export const setupInstruments = () => {
   if (!process.browser || Tone === null) return null;
 
   const heartbeatA = new Tone.MembraneSynth({
-    "pitchDecay" : 0.008,
-			"octaves" : 2,
-			"envelope" : {
-				"attack" : 0.0006,
-				"decay" : 0.5,
-				"sustain" : 0
-			}
+    pitchDecay: 0.008,
+    octaves: 2,
+    envelope: {
+      attack: 0.0006,
+      decay: 0.5,
+      sustain: 0
+    }
   }).toMaster();
 
   const heartbeatB = new Tone.MembraneSynth({
-    "pitchDecay" : 0.008,
-			"octaves" : 2,
-			"envelope" : {
-				"attack" : 0.0006,
-				"decay" : 0.5,
-				"sustain" : 0
-			}
+    pitchDecay: 0.008,
+    octaves: 2,
+    envelope: {
+      attack: 0.0006,
+      decay: 0.5,
+      sustain: 0
+    }
   }).toMaster();
-  
+
   heartbeatA.volume.value = 0;
   heartbeatB.volume.value = 0;
 

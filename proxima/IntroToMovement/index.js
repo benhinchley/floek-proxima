@@ -42,13 +42,13 @@ export class IntroToMovement extends Component {
 
   componentWillUnmount() {
     const { socket } = this.props;
-    
+
     socket.off("floek:proxima:heartbeat");
   }
 
   _play = HB => ({ sensor }) => {
-      if (sensor === HB) {
-        this.instruments[HB].triggerAttackRelease("C4", "8n");
-      }
+    if (sensor === HB) {
+      this.instruments[HB].triggerAttackRelease("C4", "8n");
     }
+  };
 }

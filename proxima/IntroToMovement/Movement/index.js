@@ -206,6 +206,8 @@ export class Movement extends Component {
   };
 
   _handleHeightChange = height => {
+    console.log({ height });
+    
     this.setState(
       state => ({ ...state, height }),
       () => {
@@ -226,8 +228,8 @@ export class Movement extends Component {
 
   _handleSpeedChange = speed => {
     if (isNaN(speed)) speed = 0;
-    
-    console.log({speed})
+
+    console.log({ speed });
 
     this.setState(
       state => ({ ...state, speed }),

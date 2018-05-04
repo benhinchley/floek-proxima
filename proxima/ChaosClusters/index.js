@@ -104,7 +104,7 @@ export class ChaosClusters extends Component {
       );
       return;
     }
-    
+
     socket.on("floek:chaos:section", this._audienceUpdateSection);
 
     if (role === ROLE_AUDIENCE) {
@@ -130,5 +130,5 @@ export class ChaosClusters extends Component {
       return;
     }
     this.setState(state => ({ ...state, section, showNextButton: false }));
-  }
+  };
 }
