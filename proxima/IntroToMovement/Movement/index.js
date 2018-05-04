@@ -118,8 +118,8 @@ export class Movement extends Component {
   componentWillUnmount() {
     const { role, socket } = this.props;
     if (role === ROLE_AUDIENCE) {
-      socket.off("floek:movement:height", this._audienceHandleHeightChange);
-      socket.off("floek:movement:speed", this._audienceHandleSpeedChange);
+      socket.off("floek:movement:height");
+      socket.off("floek:movement:speed");
     }
 
     if (role === ROLE_PERFORMER) {
@@ -180,7 +180,8 @@ export class Movement extends Component {
   _adjustAmplitude = () => {
     const { speed } = this.state;
 
-    if (speed <= 0.9) {
+    const value = 1.0 - speed;
+    if (value >= 0.05) {
       this._volume.volume.mute = false;
       const value = speed;
       const amplitute = scale(0.0, 1.0, -64, 0.0)(value);
@@ -225,6 +226,8 @@ export class Movement extends Component {
 
   _handleSpeedChange = speed => {
     if (isNaN(speed)) speed = 0;
+    
+    console.log({speed})
 
     this.setState(
       state => ({ ...state, speed }),

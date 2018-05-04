@@ -11,6 +11,9 @@ export class IntroToMovement extends Component {
     role: ROLE_AUDIENCE
   };
 
+  instruments = null;
+  HB = null;
+
   render() {
     const { role, socket } = this.props;
     return <Movement role={role} socket={socket} />;
@@ -32,12 +35,20 @@ export class IntroToMovement extends Component {
       return;
     }
 
-    const HB = randomInt(2) === 0 ? "A" : "B";
+    this.HB = randomInt(2) === 0 ? "A" : "B";
 
-    socket.on("floek:proxima:heartbeat", ({ sensor }) => {
+    socket.on("floek:proxima:heartbeat", this._play(this.HB));
+  }
+
+  componentWillUnmount() {
+    const { socket } = this.props;
+    
+    socket.off("floek:proxima:heartbeat");
+  }
+
+  _play = HB => ({ sensor }) => {
       if (sensor === HB) {
         this.instruments[HB].triggerAttackRelease("C4", "8n");
       }
-    });
-  }
+    }
 }

@@ -75,6 +75,8 @@ export class Motion extends Component {
       round(this._accelerometer.y),
       round(this._accelerometer.z)
     ];
+    
+    console.log({x,y,z})
 
     const change = {
       x: x != 0 ? round(history[0] - x) : 0, // LEFT, RIGHT
@@ -153,8 +155,8 @@ export class Motion extends Component {
     // z and y axis are flipped due to difference in how the apis work
     const change = {
       x: x != 0 ? round(history[0] - x) : 0, // LEFT, RIGHT
-      y: x != 0 ? round(history[1] - z) : 0, // UP, DOWN
-      z: x != 0 ? round(history[2] - y) : 0 // FORWARDS, BACKWARDS
+      y: x != 0 ? round(history[1] - y) : 0, // UP, DOWN
+      z: x != 0 ? round(history[2] - z) : 0 // FORWARDS, BACKWARDS
     };
     const direction = this._computeDirection(change);
 

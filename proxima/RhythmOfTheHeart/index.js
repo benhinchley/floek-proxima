@@ -5,6 +5,7 @@ import { Socket } from "socket.io-client";
 import { ROLE_PERFORMER, ROLE_AUDIENCE } from "../constants";
 import { randomInt } from "../utils";
 
+import {Container} from "../ui/Container"
 import { Button } from "../ui/Button";
 
 export class RhythmOfTheHeart extends Component {
@@ -17,7 +18,7 @@ export class RhythmOfTheHeart extends Component {
     role: ROLE_AUDIENCE
   };
 
-  state = { heartbeat: false };
+  state = { heartbeat: false, _sensorID: null };
   sensor = null;
   instruments = null;
 
@@ -26,13 +27,22 @@ export class RhythmOfTheHeart extends Component {
 
     return (
       <Fragment>
-        <Button
-          onClick={() =>
-            this.setState(state => ({ ...state, heartbeat: true }))
-          }
-        >
-          hb sounds
-        </Button>
+        <Container>
+          <Button
+            onClick={() =>
+              this.setState(state => ({ ...state, heartbeat: true, _sensorID: "A" }))
+            }
+          >
+            A
+          </Button>
+          <Button
+            onClick={() =>
+              this.setState(state => ({ ...state, heartbeat: true, _sensorID: "B" }))
+            }
+          >
+            B
+          </Button>
+        </Container>
 
         <Button
           onClick={() =>
@@ -63,30 +73,30 @@ export class RhythmOfTheHeart extends Component {
       return;
     }
 
-    // Random select what heartbeat to play
-    this.sensor = randomInt(2) === 0 ? "A" : "B";
-
-    socket.on("floek:proxima:heartbeat", this._play(this.sensor));
-
     if (role === ROLE_AUDIENCE) {
       socket.on("floek:proxima:heartbeat:audience", ({ active }) =>
         this.setState(state => ({ ...state, heartbeat: active }))
       );
+    
+      this.sensor = randomInt(2) === 0 ? "A" : "B";
+      socket.on("floek:proxima:heartbeat", data => this._play(this.sensor)(data));
     } else if (role === ROLE_PERFORMER) {
-      // performer specific things
+      socket.on("floek:proxima:heartbeat", data => this._play(this.state._sensorID)(data));
     }
   }
 
   componentWillUnmount() {
-    const { socket } = this.props;
-    socket.off("floek:proxima:heartbeat", this._play(this.sensor));
+    const { role, socket } = this.props;
+    
+    socket.off("floek:proxima:heartbeat");
   }
 
   _play = HB => ({ sensor }) => {
     // If the heartbeat is active AND the sensor incoming matches the key for the deivce
     // play the sound
     if (this.state.heartbeat && sensor === HB) {
-      this.instruments[HB].triggerAttackRelease("C4", "16n");
+      const synth = this.instruments[HB]
+      synth.triggerAttack(233.08, "+0.1", Math.random()*0.5 + 0.5);
     }
   };
 }
@@ -96,34 +106,31 @@ export const setupInstruments = () => {
   // have not required tone do nothing.
   if (!process.browser || Tone === null) return null;
 
-  const heartbeatA = new Tone.MetalSynth({
-    frequency: 233.08,
-    envelope: {
-      attack: 0.001,
-      decay: 0.8,
-      release: 0.2
-    },
-    harmonicity: 5.1,
-    modulationIndex: 32,
-    resonance: 932.33,
-    octaves: 4
-  });
+  const heartbeatA = new Tone.MembraneSynth({
+    "pitchDecay" : 0.008,
+			"octaves" : 2,
+			"envelope" : {
+				"attack" : 0.0006,
+				"decay" : 0.5,
+				"sustain" : 0
+			}
+  }).toMaster();
 
-  const heartbeatB = new Tone.MetalSynth({
-    frequency: 1864.66,
-    envelope: {
-      attack: 0.001,
-      decay: 1.4,
-      release: 0.2
-    },
-    harmonicity: 5.1,
-    modulationIndex: 32,
-    resonance: 7458.62,
-    octaves: 1.5
-  });
+  const heartbeatB = new Tone.MembraneSynth({
+    "pitchDecay" : 0.008,
+			"octaves" : 2,
+			"envelope" : {
+				"attack" : 0.0006,
+				"decay" : 0.5,
+				"sustain" : 0
+			}
+  }).toMaster();
+  
+  heartbeatA.volume.value = 0;
+  heartbeatB.volume.value = 0;
 
   return {
-    A: heartbeatA.toMaster(),
-    B: heartbeatB.toMaster()
+    A: heartbeatA,
+    B: heartbeatB
   };
 };
