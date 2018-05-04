@@ -104,11 +104,6 @@ export class ChaosClusters extends Component {
       );
       return;
     }
-
-    if (this.instruments === null) {
-      console.error("could not setup instruments, abandoning all other setup.");
-      return;
-    }
     
     socket.on("floek:chaos:section", this._audienceUpdateSection);
 
@@ -134,6 +129,6 @@ export class ChaosClusters extends Component {
     if (section === this.state.section) {
       return;
     }
-    this.setState(state => ({ ...state, section }));
+    this.setState(state => ({ ...state, section, showNextButton: false }));
   }
 }
