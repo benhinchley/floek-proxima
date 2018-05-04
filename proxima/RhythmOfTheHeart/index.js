@@ -27,19 +27,7 @@ export class RhythmOfTheHeart extends Component {
 
     return (
       <Fragment>
-        <Container>
-          <Button
-            onClick={() =>
-              this.setState(state => ({
-                ...state,
-                heartbeat: true,
-                _sensorID: "A"
-              }))
-            }
-          >
-            A
-          </Button>
-          <Button
+        <Button
             onClick={() =>
               this.setState(state => ({
                 ...state,
@@ -50,7 +38,6 @@ export class RhythmOfTheHeart extends Component {
           >
             B
           </Button>
-        </Container>
 
         <Button
           onClick={() =>
@@ -86,7 +73,7 @@ export class RhythmOfTheHeart extends Component {
         this.setState(state => ({ ...state, heartbeat: active }))
       );
 
-      this.sensor = randomInt(2) === 0 ? "A" : "B";
+      this.sensor = "B";
       socket.on("floek:proxima:heartbeat", data =>
         this._play(this.sensor)(data)
       );

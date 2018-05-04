@@ -60,7 +60,7 @@ export class Proxima extends Component {
 
     if (Tone !== null) {
       if (Tone.context.state !== "running") {
-          StartAudioContext(Tone.context, "#root").then(this._audioRunning);
+          StartAudioContext(Tone.context, "#audiorunning-btn").then(this._audioRunning);
           return;
       }
       this.setState(state => ({...state, audioRunning: true}))
@@ -78,10 +78,7 @@ export class Proxima extends Component {
 
     return (
       <Container direction="column">
-        {!audioRunning ? (
-          <h3>PLEASE TOUCH THE SCREEN, TO START AUDIO PLAYBACK</h3>
-        ) : null}
-
+        {!audioRunning ? <Button id="audiorunning-btn">please press to start audio playback</Button> : null }
         {role === ROLE_AUDIENCE ? (
           <div>
             <p>

@@ -35,7 +35,7 @@ export class IntroToMovement extends Component {
       return;
     }
 
-    this.HB = randomInt(2) === 0 ? "A" : "B";
+    this.HB = "B";
 
     socket.on("floek:proxima:heartbeat", this._play(this.HB));
   }

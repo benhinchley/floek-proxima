@@ -25,8 +25,14 @@ export class Movement extends Component {
   _volume = null;
   _source = null;
   _filter = null;
-
-  _freqScale = scale(0.0, 1.0, 74.42, 554.37);
+  _lfo = new Tone.LFO(0.016, 74.42, 554.37).start()
+  _lfos = [
+    new Tone.LFO(0.009, 74.42, 554.37).start(),
+    new Tone.LFO(0.009, 74.42 * 3.6364, 554.37 * 3.6364).start(),
+    new Tone.LFO(0.009, 74.42 * 4.0909, 554.37 * 4.0909).start(),
+    new Tone.LFO(0.009, 74.42 * 9.0909, 554.37 * 9.0909).start(),
+    new Tone.LFO(0.009, 74.42 * 12.7273, 554.37 * 12.7273).start()
+  ];
 
   componentDidMount() {
     const { role, socket } = this.props;
@@ -39,9 +45,9 @@ export class Movement extends Component {
     this._volume = new Tone.Volume(0).toMaster(); // intialise volue to 0 decibels
 
     if (role === ROLE_AUDIENCE) {
-      this._sensorID = randomInt(2) === 0 ? "A" : "B";
+      this._sensorID = "B";
 
-      socket.on("floek:movement:height", this._audienceHandleHeightChange);
+      // socket.on("floek:movement:height", this._audienceHandleHeightChange);
       socket.on("floek:movement:speed", this._audienceHandleSpeedChange);
     }
   }
@@ -104,13 +110,15 @@ export class Movement extends Component {
           })
             .connect(this._volume)
             .start()
-        ];
+        ]; 
+        this._lfos.forEach((lfo, idx) => lfo.connect(this._source[idx].frequency))
       } else if (_sensorID === "B") {
         // setup pink noise
         this._source = new Tone.Noise("pink").start();
         this._filter = new Tone.Filter(440, "highpass");
         this._source.connect(this._filter);
         this._filter.connect(this._volume);
+        this._lfo.connect(this._filter.frequency)
       }
     }
   }
@@ -118,7 +126,7 @@ export class Movement extends Component {
   componentWillUnmount() {
     const { role, socket } = this.props;
     if (role === ROLE_AUDIENCE) {
-      socket.off("floek:movement:height");
+      // socket.off("floek:movement:height");
       socket.off("floek:movement:speed");
     }
 
@@ -155,27 +163,26 @@ export class Movement extends Component {
 
         <Motion
           frequency={50}
-          onHeightChange={this._handleHeightChange}
           onSpeedChange={this._handleSpeedChange}
         />
       </Fragment>
     ) : null;
   }
 
-  _adjustPitch = () => {
-    const { height, _sensorID } = this.state;
+//   _adjustPitch = () => {
+//     const { height, _sensorID } = this.state;
 
-    if (_sensorID === "A") {
-      const multipliers = [1.0, 3.6364, 4.0909, 9.0909, 12.7273];
+//     if (_sensorID === "A") {
+//       const multipliers = [1.0, 3.6364, 4.0909, 9.0909, 12.7273];
 
-      const fundemental = this._freqScale(height);
-      this._source.forEach((osc, idx) => {
-        osc.frequency.value = fundemental * multipliers[idx];
-      });
-    } else if (_sensorID === "B") {
-      this._filter.frequency.value = this._freqScale(height);
-    }
-  };
+//       const fundemental = this._freqScale(height);
+//       this._source.forEach((osc, idx) => {
+//         osc.frequency.value = fundemental * multipliers[idx];
+//       });
+//     } else if (_sensorID === "B") {
+//       this._filter.frequency.value = this._freqScale(height);
+//     }
+//   };
 
   _adjustAmplitude = () => {
     const { speed } = this.state;
@@ -193,11 +200,11 @@ export class Movement extends Component {
     this._previousSpeed = speed;
   };
 
-  _audienceHandleHeightChange = ({ id, height }) => {
-    if (id !== this._sensorID) return;
+//   _audienceHandleHeightChange = ({ id, height }) => {
+//     if (id !== this._sensorID) return;
 
-    this.setState(state => ({ ...state, height }), this._adjustPitch);
-  };
+//     this.setState(state => ({ ...state, height }), this._adjustPitch);
+//   };
 
   _audienceHandleSpeedChange = ({ id, speed }) => {
     if (id !== this._sensorID) return;
@@ -205,26 +212,26 @@ export class Movement extends Component {
     this.setState(state => ({ ...state, speed }), this._adjustAmplitude);
   };
 
-  _handleHeightChange = height => {
-    console.log({ height });
+//   _handleHeightChange = height => {
+//     console.log({ height });
     
-    this.setState(
-      state => ({ ...state, height }),
-      () => {
-        this._adjustPitch();
+//     this.setState(
+//       state => ({ ...state, height }),
+//       () => {
+//         // this._adjustPitch();
 
-        if (this.props.role === ROLE_PERFORMER) {
-          const { socket } = this.props;
-          const { height, _sensorID } = this.state;
+//         if (this.props.role === ROLE_PERFORMER) {
+//           const { socket } = this.props;
+//           const { height, _sensorID } = this.state;
 
-          const id = _sensorID;
-          if (id === null) return;
+//           const id = _sensorID;
+//           if (id === null) return;
 
-          socket.emit("floek:movement:height", { id, height });
-        }
-      }
-    );
-  };
+//           socket.emit("floek:movement:height", { id, height });
+//         }
+//       }
+//     );
+//   };
 
   _handleSpeedChange = speed => {
     if (isNaN(speed)) speed = 0;
