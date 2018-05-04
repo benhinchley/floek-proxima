@@ -79,10 +79,7 @@ export class Klangfarben extends Component {
     const { role, socket } = this.props;
 
     if (role === ROLE_AUDIENCE) {
-      socket.off(
-        "floek:chaos:klangfarben:sequence",
-        this._handleSequenceUpdate
-      );
+      socket.off("floek:chaos:klangfarben:sequence");
     }
   }
 

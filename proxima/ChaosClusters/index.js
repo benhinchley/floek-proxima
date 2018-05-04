@@ -116,7 +116,7 @@ export class ChaosClusters extends Component {
 
   componentWillUnmount() {
     const { socket } = this.props;
-    socket.off("floek:chaos:section", this._audienceUpdateSection);
+    socket.off("floek:chaos:section");
   }
 
   componentDidUpdate() {
