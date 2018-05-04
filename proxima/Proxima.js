@@ -59,7 +59,11 @@ export class Proxima extends Component {
     });
 
     if (Tone !== null) {
-      StartAudioContext(Tone.context, "#root").then(this._audioRunning);
+      if (Tone.context.state !== "running") {
+          StartAudioContext(Tone.context, "#root").then(this._audioRunning);
+          return;
+      }
+      this.setState(state => ({...state, audioRunning: true}))
     }
   }
 

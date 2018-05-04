@@ -109,15 +109,13 @@ export class ChaosClusters extends Component {
       console.error("could not setup instruments, abandoning all other setup.");
       return;
     }
+    
+    socket.on("floek:chaos:section", this._audienceUpdateSection);
 
     if (role === ROLE_AUDIENCE) {
       // audience specific things
-      // recieving motion data and applying to params accordingly
-      // listen for section update
-      socket.on("floek:chaos:section", this._audienceUpdateSection);
     } else if (role === ROLE_PERFORMER) {
       // performer specific things
-      // sending motion data
     }
   }
 
@@ -132,6 +130,10 @@ export class ChaosClusters extends Component {
       this.setState(state => ({ showNextButton: true }));
   }
 
-  _audienceUpdateSection = ({ section }) =>
+  _audienceUpdateSection = ({ section }) => {
+    if (section === this.state.section) {
+      return;
+    }
     this.setState(state => ({ ...state, section }));
+  }
 }

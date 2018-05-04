@@ -31,11 +31,8 @@ export class Sequence extends Component {
 
     if (this._sequence !== null) {
       this._sequence.stop();
-      this._env.disconnect(Tone.Master).dispose();
-      this._sine
-        .stop()
-        .disconnect(this._env)
-        .dispose();
+      this._env.disconnect(Tone.Master);
+      this._sine.stop().disconnect(this._env);
       this._repeats = 0;
       this._env = this._sine = this._sequence = null;
     }
@@ -53,10 +50,7 @@ export class Sequence extends Component {
     if (this._sequence !== null) {
       this._sequence.stop();
       this._env.disconnect(Tone.Master);
-      this._sine
-        .stop()
-        .disconnect(this._env)
-        .dispose();
+      this._sine.stop().disconnect(this._env);
     }
     this._env = this._sine = this._sequence = null;
   }

@@ -5,7 +5,9 @@ if (process.browser) {
   }
 
   if (process.env.NODE_ENV !== "production") {
-    window["Tone"] = Tone;
+    if (!("Tone" in window)) {
+      window["Tone"] = Tone;
+    }
   }
 }
 
